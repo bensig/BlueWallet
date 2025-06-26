@@ -9,7 +9,11 @@
       "Bash(npx react-native run-ios:*)",
       "Bash(open:*)",
       "Bash(sed:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(ls:*)",
+      "Bash(cp:*)",
+      "Bash(rm:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": []
   }

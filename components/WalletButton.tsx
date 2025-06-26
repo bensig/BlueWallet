@@ -43,7 +43,7 @@ const buttonDetails: Record<string, ButtonDetails> = {
     borderColorActive: 'lnborderColor',
   },
   QuantumProof: {
-    image: require('../img/addWallet/bitcoin.png'), // Reuse Bitcoin image for now
+    image: require('../img/addWallet/quantum.png'),
     title: 'Quantum Proof Bitcoin',
     explain: 'Pairs a standard Bitcoin key with a post-quantum key and enables timestamped ownership proofs.',
     borderColorActive: 'alternativeTextColor2',

@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "appstore.png",
+      "filename" : "qWallet-6.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "appstore 1.png",
+      "filename" : "qWallet-6 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "1024.png",
+      "filename" : "qWallet-6 2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
