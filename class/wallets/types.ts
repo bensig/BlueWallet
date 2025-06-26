@@ -17,6 +17,7 @@ import { SegwitP2SHWallet } from './segwit-p2sh-wallet';
 import { SLIP39LegacyP2PKHWallet, SLIP39SegwitBech32Wallet, SLIP39SegwitP2SHWallet } from './slip39-wallets';
 import { WatchOnlyWallet } from './watch-only-wallet';
 import { TaprootWallet } from './taproot-wallet.ts';
+import { QuantumProofWallet } from './quantum-proof-wallet';
 
 export type Utxo = {
   // Returned by BlueElectrum
@@ -154,6 +155,7 @@ export type TWallet =
   | LegacyWallet
   | LightningCustodianWallet
   | MultisigHDWallet
+  | QuantumProofWallet
   | SLIP39LegacyP2PKHWallet
   | SLIP39SegwitBech32Wallet
   | SLIP39SegwitP2SHWallet

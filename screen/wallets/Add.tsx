@@ -15,7 +15,7 @@ import {
 import A from '../../blue_modules/analytics';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { BlueButtonLink, BlueFormLabel, BlueText } from '../../BlueComponents';
-import { HDSegwitBech32Wallet, HDSegwitP2SHWallet, LightningCustodianWallet, SegwitP2SHWallet } from '../../class';
+import { HDSegwitBech32Wallet, HDSegwitP2SHWallet, LightningCustodianWallet, QuantumProofWallet, SegwitP2SHWallet } from '../../class';
 import presentAlert from '../../components/Alert';
 import Button from '../../components/Button';
 import { useTheme } from '../../components/themes';
@@ -40,6 +40,7 @@ enum ButtonSelected {
   // @ts-ignore: Return later to update
   OFFCHAIN = Chain.OFFCHAIN,
   VAULT = 'VAULT',
+  QUANTUM_PROOF = 'QUANTUM_PROOF',
 }
 
 interface State {
@@ -344,6 +345,30 @@ const WalletsAdd: React.FC = () => {
     } else if (selectedWalletType === ButtonSelected.VAULT) {
       setIsLoading(false);
       navigate('WalletsAddMultisig', { walletLabel: label.trim().length > 0 ? label : loc.multisig.default_label });
+    } else if (selectedWalletType === ButtonSelected.QUANTUM_PROOF) {
+      const w = new QuantumProofWallet();
+      w.setLabel(label || 'Quantum Proof Bitcoin');
+
+      if (entropy) {
+        try {
+          await w.generateFromEntropy(entropy);
+        } catch (e: any) {
+          console.log(e.toString());
+          presentAlert({ message: e.toString() });
+          return;
+        }
+      } else {
+        await w.generate();
+      }
+
+      addWallet(w);
+      await saveToDisk();
+      A(A.ENUM.CREATED_WALLET);
+      triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
+
+      navigate('PleaseBackup', {
+        walletID: w.getID(),
+      });
     }
   };
 
@@ -401,6 +426,11 @@ const WalletsAdd: React.FC = () => {
     setSelectedWalletType(ButtonSelected.ONCHAIN);
   };
 
+  const handleOnQuantumProofButtonPressed = () => {
+    Keyboard.dismiss();
+    confirmResetEntropy(ButtonSelected.QUANTUM_PROOF);
+  };
+
   const onLearnMorePressed = () => {
     Linking.openURL('https://bluewallet.io/lightning/');
   };
@@ -455,6 +485,13 @@ const WalletsAdd: React.FC = () => {
           testID="ActivateVaultButton"
           active={selectedWalletType === ButtonSelected.VAULT}
           onPress={handleOnVaultButtonPressed}
+          size={styles.button}
+        />
+        <WalletButton
+          buttonType="QuantumProof"
+          testID="ActivateQuantumProofButton"
+          active={selectedWalletType === ButtonSelected.QUANTUM_PROOF}
+          onPress={handleOnQuantumProofButtonPressed}
           size={styles.button}
         />
         {selectedWalletType === ButtonSelected.OFFCHAIN && LightningButtonMemo}

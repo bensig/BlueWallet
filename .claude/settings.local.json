@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rg:*)",
+      "Bash(grep:*)",
+      "Bash(npm run tslint)",
+      "Bash(find:*)",
+      "Bash(npx eslint:*)",
+      "Bash(npx react-native run-ios:*)",
+      "Bash(open:*)",
+      "Bash(sed:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": []
+  }
+}

@@ -18,6 +18,7 @@ import {
   HDSegwitBech32Wallet,
   LegacyWallet,
   MultisigHDWallet,
+  QuantumProofWallet,
   SegwitBech32Wallet,
   SegwitP2SHWallet,
   WatchOnlyWallet,
@@ -419,6 +420,63 @@ const WalletDetails: React.FC = () => {
     setIsMasterFingerPrintVisible(true);
   };
 
+  const generateQuantumProof = async () => {
+    if (wallet.type !== QuantumProofWallet.type) return;
+    const qWallet = wallet as QuantumProofWallet;
+    
+    try {
+      setIsLoading(true);
+      const proof = await qWallet.generateQuantumProof();
+      triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
+      
+      presentAlert({
+        title: 'Quantum Proof Generated',
+        message: `Proof ID: ${proof.id}\nTimestamp: ${proof.timestamp}`,
+        buttons: [
+          { text: 'OK' },
+          {
+            text: 'Export',
+            onPress: () => exportQuantumProof(proof.id),
+          },
+        ],
+      });
+      
+      await saveToDisk();
+    } catch (error: any) {
+      presentAlert({ message: error.message });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const exportQuantumProof = async (proofId: string) => {
+    if (wallet.type !== QuantumProofWallet.type) return;
+    const qWallet = wallet as QuantumProofWallet;
+    
+    const proofData = qWallet.exportProof(proofId);
+    if (proofData) {
+      const fileName = `quantum-proof-${proofId}.json`;
+      await writeFileAndExport(fileName, proofData, true);
+    }
+  };
+
+  const viewQuantumProofs = () => {
+    if (wallet.type !== QuantumProofWallet.type) return;
+    const qWallet = wallet as QuantumProofWallet;
+    const proofs = qWallet.getQuantumProofs();
+    
+    if (proofs.length === 0) {
+      presentAlert({ message: 'No quantum proofs found. Generate one first!' });
+      return;
+    }
+    
+    const proofList = proofs.map(p => `${p.id}: ${p.timestamp}`).join('\n');
+    presentAlert({
+      title: `Quantum Proofs (${proofs.length})`,
+      message: proofList,
+    });
+  };
+
   return (
     <SafeAreaScrollView centerContent={isLoading} testID="WalletDetailsScroll">
       <>
@@ -654,6 +712,14 @@ const WalletDetails: React.FC = () => {
                   <>
                     <BlueSpacing20 />
                     <SecondButton onPress={navigateToSignVerify} testID="SignVerify" title={loc.addresses.sign_title} />
+                  </>
+                )}
+                {wallet.type === QuantumProofWallet.type && (
+                  <>
+                    <BlueSpacing20 />
+                    <Button onPress={generateQuantumProof} testID="GenerateQuantumProof" title="Generate Quantum Proof" />
+                    <BlueSpacing20 />
+                    <SecondButton onPress={viewQuantumProofs} testID="ViewQuantumProofs" title="View Quantum Proofs" />
                   </>
                 )}
                 <BlueSpacing20 />
