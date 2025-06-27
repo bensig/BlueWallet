@@ -25,3 +25,50 @@ if (typeof localStorage !== 'undefined') {
 // If using the crypto shim, uncomment the following line to ensure
 // crypto is loaded first, so it can populate global.crypto
 require('crypto');
+
+// Additional polyfills for React Native
+// Base64 encoding/decoding polyfills
+if (typeof global.atob === 'undefined') {
+  global.atob = function(str) {
+    return Buffer.from(str, 'base64').toString('binary');
+  };
+}
+
+if (typeof global.btoa === 'undefined') {
+  global.btoa = function(str) {
+    return Buffer.from(str, 'binary').toString('base64');
+  };
+}
+
+if (typeof global.base64ToArrayBuffer === 'undefined') {
+  global.base64ToArrayBuffer = function(base64) {
+    const binaryString = global.atob(base64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
+  };
+}
+
+if (typeof global.arrayBufferToBase64 === 'undefined') {
+  global.arrayBufferToBase64 = function(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return global.btoa(binary);
+  };
+}
+
+if (typeof global.base64FromArrayBuffer === 'undefined') {
+  global.base64FromArrayBuffer = function(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return global.btoa(binary);
+  };
+}

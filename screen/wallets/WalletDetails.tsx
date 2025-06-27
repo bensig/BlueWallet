@@ -477,6 +477,52 @@ const WalletDetails: React.FC = () => {
     });
   };
 
+  const viewPostQuantumAddress = () => {
+    if (wallet.type !== QuantumProofWallet.type) return;
+    const qWallet = wallet as QuantumProofWallet;
+    const keyFormats = qWallet.getSphincsPublicKeyFormats();
+    
+    if (!keyFormats.available) {
+      presentAlert({ 
+        title: 'SPHINCS+ Not Ready',
+        message: keyFormats.message || 'Post-quantum keypair not available'
+      });
+      return;
+    }
+    
+    const formats = keyFormats.formats;
+    const info = keyFormats.info;
+    
+    presentAlert({
+      title: 'Post-Quantum Address',
+      message: `Algorithm: ${info.algorithm}
+Key Size: ${info.public_key_size}
+Quantum Resistant: ${info.quantum_resistant ? 'Yes' : 'No'}
+
+bc1s Address:
+${formats.bc1s_address}
+
+Base58:
+${formats.base58}
+
+Hex (truncated):
+${formats.hex.substring(0, 64)}...`,
+      buttons: [
+        { text: 'Close' },
+        {
+          text: 'Export Full',
+          onPress: () => exportPostQuantumKeys(keyFormats),
+        },
+      ],
+    });
+  };
+
+  const exportPostQuantumKeys = async (keyFormats: any) => {
+    const fileName = `sphincs-keys-${Date.now()}.json`;
+    const keyData = JSON.stringify(keyFormats, null, 2);
+    await writeFileAndExport(fileName, keyData, true);
+  };
+
   return (
     <SafeAreaScrollView centerContent={isLoading} testID="WalletDetailsScroll">
       <>
@@ -720,6 +766,8 @@ const WalletDetails: React.FC = () => {
                     <Button onPress={generateQuantumProof} testID="GenerateQuantumProof" title="Generate Quantum Proof" />
                     <BlueSpacing20 />
                     <SecondButton onPress={viewQuantumProofs} testID="ViewQuantumProofs" title="View Quantum Proofs" />
+                    <BlueSpacing20 />
+                    <SecondButton onPress={viewPostQuantumAddress} testID="ViewPostQuantumAddress" title="View Post-Quantum Address" />
                   </>
                 )}
                 <BlueSpacing20 />

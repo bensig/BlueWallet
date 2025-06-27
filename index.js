@@ -1,6 +1,11 @@
 import './gesture-handler';
 import './shim.js';
 
+// Setup crypto polyfills for Noble post-quantum cryptography
+import 'react-native-get-random-values';
+import { install } from 'react-native-quick-crypto';
+install();
+
 import React, { useEffect } from 'react';
 import { AppRegistry, LogBox } from 'react-native';
 
